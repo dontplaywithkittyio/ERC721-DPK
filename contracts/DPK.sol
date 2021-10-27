@@ -1,20 +1,15 @@
-// License-Identifier: MIT
-// DontPlayWithKitty.io
+pragma solidity 0.8.7;
 
-pragma solidity ^0.8.0;
+import "./ERC721.sol";
+import "./extensions/ERC721Enumerable.sol";
+import "./extensions/ERC721Burnable.sol";
+import "./extensions/ERC721Pausable.sol";
+import "../../access/Ownable.sol";
+import "../../access/AccessControl.sol";
+import "../../utils/Context.sol";
+import "../../utils/Strings.sol";
 
-import "./token/ERC721/ERC721.sol";
-import "./token/ERC721/extensions/ERC721Enumerable.sol";
-import "./token/ERC721/extensions/ERC721Burnable.sol";
-import "./token/ERC721/extensions/ERC721Pausable.sol";
-import "./access/Ownable.sol";
-import "./access/AccessControl.sol";
-import "./utils/Context.sol";
-import "./utils/Strings.sol";
 
-/**
- * DontPlayWithKitty.io [ERC-721]
- */
 contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Burnable, ERC721Pausable{
     
     using Strings for uint256;
@@ -47,6 +42,7 @@ contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Bu
         _setupRole(ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
         _setupRole(BURN_ROLE, msg.sender);
+        _setupRole(PAUSER_ROLE, msg.sender);
     }
     
     function _baseURI() internal view virtual override returns (string memory) {
@@ -103,7 +99,7 @@ contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Bu
         _tokenParamListMap[tokenId] = params;
         
         for (uint256 i = 0; i < params.length; i+=2) {
-            _setTableParam(tokenId, params[i], params[i + 1]);
+            _setTableParamNoEvent(tokenId, params[i], params[i + 1]);
         }
         
         emit NFTGenerated(tokenId, to, tokenType, params);
@@ -114,7 +110,7 @@ contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Bu
             if((uint8(bytes(_str)[i])-48) < 0 || (uint8(bytes(_str)[i])-48) > 9){
                 return 0;
             }
-            res += (uint8(bytes(_str)[i]) - 48) * 10**(bytes(_str).length - i - 1);
+            res += (uint8(bytes(_str)[i]) - 48) * 10 ** (bytes(_str).length - i - 1);
         }
         return res;
     }
@@ -128,6 +124,12 @@ contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Bu
 
         _tokenParamTableMap[tokenId][key] = value;
         emit UpdateTableParams(tokenId, key, value);
+    }
+    
+    function _setTableParamNoEvent(uint256 tokenId, string memory key, string memory value) internal virtual {
+        // require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        _tokenParamTableMap[tokenId][key] = value;
     }
     
     function getTableParamByTokenId(uint256 tokenId, string memory key) public view returns (string memory) {
