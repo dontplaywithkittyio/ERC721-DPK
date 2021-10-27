@@ -1,15 +1,19 @@
+// License-Identifier: MIT
+// DontPlayWithKitty.io
 pragma solidity 0.8.7;
 
-import "./ERC721.sol";
-import "./extensions/ERC721Enumerable.sol";
-import "./extensions/ERC721Burnable.sol";
-import "./extensions/ERC721Pausable.sol";
-import "../../access/Ownable.sol";
-import "../../access/AccessControl.sol";
-import "../../utils/Context.sol";
-import "../../utils/Strings.sol";
+import "./token/ERC721/ERC721.sol";
+import "./token/ERC721/extensions/ERC721Enumerable.sol";
+import "./token/ERC721/extensions/ERC721Burnable.sol";
+import "./token/ERC721/extensions/ERC721Pausable.sol";
+import "./access/Ownable.sol";
+import "./access/AccessControl.sol";
+import "./utils/Context.sol";
+import "./utils/Strings.sol";
 
-
+/**
+ * DontPlayWithKitty.io [ERC-721]
+ */
 contract DontPlayWithKitty is AccessControl, Ownable, ERC721Enumerable, ERC721Burnable, ERC721Pausable{
     
     using Strings for uint256;
